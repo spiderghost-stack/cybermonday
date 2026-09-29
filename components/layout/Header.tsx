@@ -1,7 +1,15 @@
 import HeaderClient from "./HeaderClient";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Header() {
-  // Pour l'instant, on rend le header sans session (sera activé quand Supabase sera branché aux pages)
-  // Le middleware gère la session côté navigation
-  return <HeaderClient user={null} profile={null} />;
+export default async function Header() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  let profile = null;
+  if (user) {
+    const { data } = await supabase.from("profiles").select("first_name, last_name, role").eq("user_id", user.id).single();
+    profile = data;
+  }
+
+  return <HeaderClient user={user} profile={profile} />;
 }
