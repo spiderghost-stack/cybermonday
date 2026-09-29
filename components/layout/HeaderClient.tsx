@@ -90,9 +90,9 @@ export default function HeaderClient({ user, profile }: HeaderClientProps) {
               <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 p-4">
                 <div className="mb-4">
                   <h4 className="text-xs font-bold text-gray-400 uppercase mb-2">Recent searches</h4>
-                  <div className="flex gap-2">
-                    <span className="text-sm bg-gray-100 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-200">MacBook</span>
-                    <span className="text-sm bg-gray-100 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-200">Gaming laptop</span>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="text-sm bg-gray-100 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-200 whitespace-nowrap">MacBook</span>
+                    <span className="text-sm bg-gray-100 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-200 whitespace-nowrap">Gaming laptop</span>
                   </div>
                 </div>
                 <div>
