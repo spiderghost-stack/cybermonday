@@ -14,9 +14,10 @@ export async function generateStaticParams() {
   return slugs.map(slug => ({ slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const product = await getProductBySlug(params.slug)
-    ?? mockProducts.find(p => p.slug === params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug)
+    ?? mockProducts.find(p => p.slug === slug);
 
   if (!product) return { title: "Product Not Found | Cyber Monday" };
 
@@ -31,15 +32,17 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function ProductPage({ params }: { params: { slug: string } }) {
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  
   // Try Supabase first, fallback to mock data
-  const product = await getProductBySlug(params.slug)
-    ?? mockProducts.find(p => p.slug === params.slug);
+  const product = await getProductBySlug(slug)
+    ?? mockProducts.find(p => p.slug === slug);
 
   if (!product) notFound();
 
-  const related = await getRelatedProducts(product!.category, params.slug, 4)
-    .then(res => res.length > 0 ? res : mockProducts.filter(p => p.category === product!.category && p.slug !== params.slug).slice(0, 4));
+  const related = await getRelatedProducts(product!.category, slug, 4)
+    .then(res => res.length > 0 ? res : mockProducts.filter(p => p.category === product!.category && p.slug !== slug).slice(0, 4));
 
   const isDiscounted = product!.oldPrice && product!.oldPrice > product!.price;
 
