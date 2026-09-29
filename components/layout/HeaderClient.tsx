@@ -73,7 +73,7 @@ export default function HeaderClient({ user, profile }: HeaderClientProps) {
           </nav>
 
           {/* Search Bar */}
-          <div className="hidden lg:block flex-1 max-w-lg mx-8 relative z-50">
+          <div className="hidden md:block flex-1 max-w-sm lg:max-w-lg mx-4 lg:mx-8 relative z-50">
             <div className={`relative flex items-center transition-all ${isSearchFocused ? "ring-2 ring-cyber-promo rounded-xl" : ""}`}>
               <input
                 type="text"
@@ -181,10 +181,36 @@ export default function HeaderClient({ user, profile }: HeaderClientProps) {
               <button onClick={() => setIsMobileMenuOpen(false)} className="p-2"><X className="h-6 w-6 text-cyber-main" /></button>
             </div>
             <div className="p-4 border-b border-gray-100">
-              <div className="relative">
-                <input type="text" placeholder="Search products..." className="w-full bg-cyber-light rounded-md py-3 pl-4 pr-10 text-sm outline-none" />
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <div className={`relative transition-all ${isSearchFocused ? "ring-2 ring-cyber-promo rounded-md" : ""}`}>
+                <input 
+                  type="text" 
+                  placeholder="Search products..." 
+                  className="w-full bg-cyber-light rounded-md py-3 pl-4 pr-10 text-sm outline-none"
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+                />
+                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
               </div>
+              
+              {isSearchFocused && (
+                <div className="mt-4 bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                  <div className="mb-4">
+                    <h4 className="text-xs font-bold text-gray-400 uppercase mb-2">Recent searches</h4>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="text-sm bg-gray-100 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-200 whitespace-nowrap">MacBook</span>
+                      <span className="text-sm bg-gray-100 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-200 whitespace-nowrap">Gaming laptop</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-gray-400 uppercase mb-2">Popular categories</h4>
+                    <ul className="space-y-2">
+                      <li><Link href="/deals?category=Audio" onClick={() => setIsMobileMenuOpen(false)} className="text-sm text-cyber-main hover:text-cyber-promo flex items-center gap-2"><Search className="w-3 h-3 text-gray-400" /> Headphones</Link></li>
+                      <li><Link href="/deals?category=Phones" onClick={() => setIsMobileMenuOpen(false)} className="text-sm text-cyber-main hover:text-cyber-promo flex items-center gap-2"><Search className="w-3 h-3 text-gray-400" /> Smartphones</Link></li>
+                      <li><Link href="/deals?category=TV" onClick={() => setIsMobileMenuOpen(false)} className="text-sm text-cyber-main hover:text-cyber-promo flex items-center gap-2"><Search className="w-3 h-3 text-gray-400" /> Gaming TV</Link></li>
+                    </ul>
+                  </div>
+                </div>
+              )}
             </div>
             <nav className="flex-1 overflow-y-auto p-4 flex flex-col space-y-4">
               <Link href="/deals" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold">Shop All</Link>
