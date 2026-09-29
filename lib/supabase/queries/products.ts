@@ -1,6 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { createClient } from "@/lib/supabase/server";
+import { createClient as createStaticClient } from "@supabase/supabase-js";
 import { type Product } from "@/data/products";
+
+function getClient() {
+  return createStaticClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+  );
+}
 
 // ─── Mapper : convertit une ligne Supabase → type Product du frontend ─────
 export function mapSupabaseProduct(row: any): Product {
@@ -57,7 +63,7 @@ const PRODUCT_SELECT = `
 
 // ─── Tous les produits actifs ─────────────────────────────────────────────
 export async function getAllProducts(): Promise<Product[]> {
-  const supabase = await createClient();
+  const supabase = getClient();
   const data = await safeQuery(
     async () => await supabase.from("products").select(PRODUCT_SELECT).eq("is_active", true).order("created_at", { ascending: false }),
     "getAllProducts"
@@ -67,7 +73,7 @@ export async function getAllProducts(): Promise<Product[]> {
 
 // ─── Produits featured ────────────────────────────────────────────────────
 export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
-  const supabase = await createClient();
+  const supabase = getClient();
   const data = await safeQuery(
     async () => await supabase.from("products").select(PRODUCT_SELECT).eq("is_active", true).eq("is_featured", true).order("discount_percentage", { ascending: false }).limit(limit),
     "getFeaturedProducts"
@@ -77,7 +83,7 @@ export async function getFeaturedProducts(limit = 8): Promise<Product[]> {
 
 // ─── Produits trending ────────────────────────────────────────────────────
 export async function getTrendingProducts(limit = 6): Promise<Product[]> {
-  const supabase = await createClient();
+  const supabase = getClient();
   const data = await safeQuery(
     async () => await supabase.from("products").select(PRODUCT_SELECT).eq("is_active", true).eq("is_trending", true).order("rating", { ascending: false }).limit(limit),
     "getTrendingProducts"
@@ -87,7 +93,7 @@ export async function getTrendingProducts(limit = 6): Promise<Product[]> {
 
 // ─── Un seul produit par slug ─────────────────────────────────────────────
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const supabase = await createClient();
+  const supabase = getClient();
   const data = await safeQuery(
     async () => await supabase.from("products").select(PRODUCT_SELECT).eq("slug", slug).eq("is_active", true).single(),
     "getProductBySlug"
@@ -101,7 +107,7 @@ export async function getRelatedProducts(
   currentSlug: string,
   limit = 4
 ): Promise<Product[]> {
-  const supabase = await createClient();
+  const supabase = getClient();
 
   const catData = await safeQuery(
     async () => await supabase.from("categories").select("id").eq("name", categoryName).single(),
@@ -118,7 +124,7 @@ export async function getRelatedProducts(
 
 // ─── Tous les slugs pour generateStaticParams ─────────────────────────────
 export async function getAllProductSlugs(): Promise<string[]> {
-  const supabase = await createClient();
+  const supabase = getClient();
   const data = await safeQuery(
     async () => await supabase.from("products").select("slug").eq("is_active", true),
     "getAllProductSlugs"
@@ -131,7 +137,7 @@ export async function getProductsByCategory(
   categorySlug: string,
   limit = 20
 ): Promise<Product[]> {
-  const supabase = await createClient();
+  const supabase = getClient();
   const data = await safeQuery(
     async () => await supabase.from("products").select(PRODUCT_SELECT).eq("is_active", true).eq("categories.slug", categorySlug).order("discount_percentage", { ascending: false }).limit(limit),
     "getProductsByCategory"
